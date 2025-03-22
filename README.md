@@ -1,58 +1,58 @@
-# Guía Práctica: API de Búsqueda en Google Sheets para AsisteClick
+# Guía Práctica: API de Búsqueda en Google Sheets para AsisteClick 🚀
 
-## Índice
+## Índice 📑
 
-1. [Descripción general](#descripción-general)
-2. [Configuración del Google Sheet](#configuración-del-google-sheet)
-3. [Parámetros del API](#parámetros-del-api)
-4. [Casos de uso con ejemplos de cURL](#casos-de-uso-con-ejemplos-de-curl)
-   - [Búsqueda básica en modo PHRASE](#búsqueda-básica-en-modo-phrase)
-   - [Búsqueda por palabras en modo WORD](#búsqueda-por-palabras-en-modo-word)
-   - [Búsqueda con resultado más similar (one_hot_field)](#búsqueda-con-resultado-más-similar-one_hot_field)
-   - [Aleatorización de resultados](#aleatorización-de-resultados)
-   - [Exclusión de columnas en la búsqueda](#exclusión-de-columnas-en-la-búsqueda)
-   - [Resultados como texto plano](#resultados-como-texto-plano)
-   - [Resultados como enlaces markdown](#resultados-como-enlaces-markdown)
-5. [Escenarios de implementación comunes](#escenarios-de-implementación-comunes)
-   - [Sistema de preguntas frecuentes (FAQ)](#sistema-de-preguntas-frecuentes-faq)
-   - [Buscador de productos](#buscador-de-productos)
-   - [Chatbot de atención al cliente](#chatbot-de-atención-al-cliente)
-   - [Base de conocimiento con enlaces](#base-de-conocimiento-con-enlaces)
-6. [Combinaciones avanzadas de parámetros](#combinaciones-avanzadas-de-parámetros)
-7. [Solución de problemas comunes](#solución-de-problemas-comunes)
-8. [Limitaciones y consideraciones](#limitaciones-y-consideraciones)
+1. [Descripción general ℹ️](#descripción-general)
+2. [Configuración del Google Sheet 📊](#configuración-del-google-sheet)
+3. [Parámetros del API 🔧](#parámetros-del-api)
+4. [Casos de uso con ejemplos de cURL 💻](#casos-de-uso-con-ejemplos-de-curl)
+   - [Búsqueda básica en modo PHRASE 🔎](#búsqueda-básica-en-modo-phrase)
+   - [Búsqueda por palabras en modo WORD 📝](#búsqueda-por-palabras-en-modo-word)
+   - [Búsqueda con resultado más similar (one_hot_field) 🎯](#búsqueda-con-resultado-más-similar-one_hot_field)
+   - [Aleatorización de resultados 🎲](#aleatorización-de-resultados)
+   - [Exclusión de columnas en la búsqueda 🙈](#exclusión-de-columnas-en-la-búsqueda)
+   - [Resultados como texto plano 🗒️](#resultados-como-texto-plano)
+   - [Resultados como enlaces markdown 🔗](#resultados-como-enlaces-markdown)
+5. [Escenarios de implementación comunes 💡](#escenarios-de-implementación-comunes)
+   - [Sistema de preguntas frecuentes (FAQ) ❓](#sistema-de-preguntas-frecuentes-faq)
+   - [Buscador de productos 🛍️](#buscador-de-productos)
+   - [Chatbot de atención al cliente 🤖](#chatbot-de-atención-al-cliente)
+   - [Base de conocimiento con enlaces 📚](#base-de-conocimiento-con-enlaces)
+6. [Combinaciones avanzadas de parámetros ⚙️](#combinaciones-avanzadas-de-parámetros)
+7. [Solución de problemas comunes 🛠️](#solución-de-problemas-comunes)
+8. [Limitaciones y consideraciones ⚠️](#limitaciones-y-consideraciones)
 
-## Descripción general
+## Descripción general ℹ️
 
 Este servicio permite realizar búsquedas en hojas de Google Sheets desde una aplicación, utilizando una API REST. El servicio realiza búsquedas flexibles, maneja la normalización de texto (eliminando acentos y caracteres especiales), y puede devolver resultados en diferentes formatos según las necesidades de tu aplicación.
 
-## Configuración del Google Sheet
+## Configuración del Google Sheet 📊
 
-### 1. Crear y preparar la hoja de cálculo
+### 1. Crear y preparar la hoja de cálculo 📝
 
-1. Crea una hoja de cálculo en Google Sheets
-2. La **primera fila** debe contener los nombres de las columnas
-   - Estos nombres serán las claves en los objetos JSON devueltos
-   - Evita espacios o caracteres especiales en los nombres de columnas
-   - Ejemplo: `Nombre`, `Descripcion`, `Precio`, `Categoria`
-3. A partir de la **segunda fila**, añade tus datos
+1. Crea una hoja de cálculo en Google Sheets.
+2. La **primera fila** debe contener los nombres de las columnas:
+   - Estos nombres serán las claves en los objetos JSON devueltos.
+   - Evita espacios o caracteres especiales en los nombres de columnas.
+   - Ejemplo: `Nombre`, `Descripcion`, `Precio`, `Categoria`.
+3. A partir de la **segunda fila**, añade tus datos.
 
-### 2. Configurar permisos de acceso
+### 2. Configurar permisos de acceso 🔑
 
-1. Haz clic en el botón "Compartir" en la esquina superior derecha
-2. Cambia la configuración a "Cualquier persona con el enlace puede ver"
-   - Si no quieres que sea público, usa una cuenta de servicio con acceso específico
+1. Haz clic en el botón "Compartir" en la esquina superior derecha.
+2. Cambia la configuración a "Cualquier persona con el enlace puede ver".
+   - Si no quieres que sea público, usa una cuenta de servicio con acceso específico.
 
-### 3. Obtener credenciales necesarias
+### 3. Obtener credenciales necesarias 🔐
 
 #### ID del Spreadsheet
 
 El ID se encuentra en la URL de tu hoja de cálculo:
 ```
-https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=0
+https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit#gid=0
 ```
 
-Por ejemplo, en la URL:
+Por ejemplo:
 ```
 https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit
 ```
@@ -64,20 +64,20 @@ Es el nombre de la pestaña en tu hoja de cálculo (por defecto "Hoja 1" o "Shee
 
 #### Clave de API para Google Sheets
 
-1. Ve a la [Consola de Google Cloud](https://console.cloud.google.com/)
-2. Crea un nuevo proyecto o selecciona uno existente
-3. Busca y habilita la "Google Sheets API"
-4. En el menú, ve a "Credenciales" y crea una clave de API
-5. (Opcional) Restringe la clave para que solo pueda acceder a la API de Google Sheets
+1. Ve a la [Consola de Google Cloud](https://console.cloud.google.com/).
+2. Crea un nuevo proyecto o selecciona uno existente.
+3. Busca y habilita la "Google Sheets API".
+4. En el menú, ve a "Credenciales" y crea una clave de API.
+5. (Opcional) Restringe la clave para que solo pueda acceder a la API de Google Sheets.
 
-## Parámetros del API
+## Parámetros del API 🔧
 
 El servicio espera un objeto JSON con los siguientes parámetros:
 
 | Parámetro            | Tipo    | Requerido | Descripción                                                                                  |
 |----------------------|---------|-----------|----------------------------------------------------------------------------------------------|
-| `sheet_api_key`      | string  | Sí        | Clave de API para acceder a Google Sheets. Reemplaza el valor por `YOUR_API_KEY`.            |
-| `spreadsheet_id`     | string  | Sí        | ID de la hoja de cálculo de Google. Reemplaza el valor por `YOUR_SPREADSHEET_ID`.              |
+| `sheet_api_key`      | string  | Sí        | Clave de API para acceder a Google Sheets.                                                   |
+| `spreadsheet_id`     | string  | Sí        | ID de la hoja de cálculo de Google.                                                          |
 | `sheet_id`           | string  | Sí        | Nombre de la hoja (tab).                                                                      |
 | `search`             | string  | Sí        | Texto a buscar.                                                                              |
 | `search_mode`        | string  | Sí        | Modo de búsqueda: "PHRASE" (frase exacta) o "WORD" (cualquier palabra).                      |
@@ -88,9 +88,9 @@ El servicio espera un objeto JSON con los siguientes parámetros:
 | `result_object_link` | string  | Sí*       | Columna para usar como URL (*requerido si result_typeof es "LINK").                           |
 | `exclude_columns`    | array   | No        | Lista de columnas a excluir de la búsqueda.                                                  |
 
-## Casos de uso con ejemplos de cURL
+## Casos de uso con ejemplos de cURL 💻
 
-### Búsqueda básica en modo PHRASE
+### Búsqueda básica en modo PHRASE 🔎
 
 Busca una frase exacta y devuelve objetos JSON completos:
 
@@ -125,7 +125,7 @@ Respuesta:
 ]
 ```
 
-### Búsqueda por palabras en modo WORD
+### Búsqueda por palabras en modo WORD 📝
 
 Busca cualquiera de las palabras y devuelve objetos JSON:
 
@@ -166,7 +166,7 @@ Respuesta:
 ]
 ```
 
-### Búsqueda con resultado más similar (one_hot_field)
+### Búsqueda con resultado más similar (one_hot_field) 🎯
 
 Busca y devuelve solo el resultado con mayor similitud en la columna especificada:
 
@@ -194,7 +194,7 @@ Respuesta:
 ]
 ```
 
-### Aleatorización de resultados
+### Aleatorización de resultados 🎲
 
 Busca y devuelve resultados en orden aleatorio:
 
@@ -212,7 +212,7 @@ curl -X POST https://tudominio.com/api/sheets-search \
   }'
 ```
 
-### Exclusión de columnas en la búsqueda
+### Exclusión de columnas en la búsqueda 🙈
 
 Busca en todas las columnas excepto las especificadas:
 
@@ -230,7 +230,7 @@ curl -X POST https://tudominio.com/api/sheets-search \
   }'
 ```
 
-### Resultados como texto plano
+### Resultados como texto plano 🗒️
 
 Busca y devuelve solo el texto de una columna específica:
 
@@ -253,7 +253,7 @@ Respuesta:
 Para realizar una devolución, contacta con nuestro servicio de atención al cliente en el plazo de 14 días desde la recepción del producto.<br/><br/>La política de devoluciones permite cambios durante los primeros 30 días para productos no usados.
 ```
 
-### Resultados como enlaces markdown
+### Resultados como enlaces markdown 🔗
 
 Busca y devuelve resultados como enlaces en formato markdown:
 
@@ -277,9 +277,9 @@ Respuesta:
 [Tutorial de inicio rápido](https://ejemplo.com/tutoriales/inicio)<br/><br/>[Tutorial avanzado de la API](https://ejemplo.com/tutoriales/api-avanzado)
 ```
 
-## Escenarios de implementación comunes
+## Escenarios de implementación comunes 💡
 
-### Sistema de preguntas frecuentes (FAQ)
+### Sistema de preguntas frecuentes (FAQ) ❓
 
 **Configuración del Google Sheet**:
 - Columnas: `Pregunta`, `Respuesta`
@@ -305,7 +305,7 @@ Esta configuración:
 2. Encuentra la pregunta más similar en la columna "Pregunta".
 3. Devuelve solo el texto de la respuesta.
 
-### Buscador de productos
+### Buscador de productos 🛍️
 
 **Configuración del Google Sheet**:
 - Columnas: `Producto`, `Descripcion`, `Precio`, `Categoria`, `ImagenURL`, `SKU`
@@ -330,7 +330,7 @@ Esta configuración:
 2. No busca en las columnas SKU e ImagenURL.
 3. Devuelve objetos completos con todos los datos del producto.
 
-### Chatbot de atención al cliente
+### Chatbot de atención al cliente 🤖
 
 **Configuración del Google Sheet**:
 - Columnas: `Intento`, `Patrones`, `Respuesta`
@@ -355,10 +355,10 @@ curl -X POST https://tudominio.com/api/sheets-search \
 Esta configuración:
 1. Busca palabras clave del usuario.
 2. Encuentra el patrón más similar en la columna "Patrones".
-3. Si hay múltiples respuestas que coinciden, elige una al azar.
+3. Si hay múltiples respuestas, elige una al azar.
 4. Devuelve solo el texto de la respuesta.
 
-### Base de conocimiento con enlaces
+### Base de conocimiento con enlaces 📚
 
 **Configuración del Google Sheet**:
 - Columnas: `Tema`, `Descripcion`, `URLRecurso`
@@ -384,7 +384,7 @@ Esta configuración:
 2. Devuelve los resultados como enlaces en formato markdown.
 3. Usa el Tema como texto del enlace y URLRecurso como la URL.
 
-## Combinaciones avanzadas de parámetros
+## Combinaciones avanzadas de parámetros ⚙️
 
 ### Chatbot con respuestas aleatorias
 
@@ -443,7 +443,7 @@ curl -X POST https://tudominio.com/api/sheets-search \
   }'
 ```
 
-## Solución de problemas comunes
+## Solución de problemas comunes 🛠️
 
 ### No se obtienen resultados
 
@@ -467,22 +467,22 @@ Si la API responde lentamente:
 2. Implementa caché para reducir las llamadas a Google Sheets.
 3. Considera migrar a una base de datos más eficiente si el volumen de datos es muy grande.
 
-## Limitaciones y consideraciones
+## Limitaciones y consideraciones ⚠️
 
 ### Limitaciones de Google Sheets
 
-- **Cuota de API**: Google Sheets API tiene límites de uso. Verifica las [cuotas actuales](https://developers.google.com/sheets/api/limits)
-- **Tamaño de datos**: No es recomendable para conjuntos de datos muy grandes (>10,000 filas)
-- **Concurrencia**: No está diseñado para alto número de peticiones simultáneas
+- **Cuota de API**: Google Sheets API tiene límites de uso. Verifica las [cuotas actuales](https://developers.google.com/sheets/api/limits).
+- **Tamaño de datos**: No es recomendable para conjuntos de datos muy grandes (>10,000 filas).
+- **Concurrencia**: No está diseñado para alto número de peticiones simultáneas.
 
 ### Seguridad
 
-- **Clave de API**: No expongas tu clave de API directamente en el cliente
-- **Datos sensibles**: No almacenes información confidencial en Google Sheets con acceso público
-- **Validación**: Siempre valida y sanitiza las entradas del usuario
+- **Clave de API**: No expongas tu clave de API directamente en el cliente.
+- **Datos sensibles**: No almacenes información confidencial en Google Sheets con acceso público.
+- **Validación**: Siempre valida y sanitiza las entradas del usuario.
 
 ### Optimización
 
-- **Columnas**: Usa solo las columnas necesarias
-- **Estructura**: Mantén los datos estructurados de manera consistente
-- **Exclusión**: Excluye columnas que no son relevantes para la búsqueda para mejorar el rendimiento
+- **Columnas**: Usa solo las columnas necesarias.
+- **Estructura**: Mantén los datos estructurados de manera consistente.
+- **Exclusión**: Excluye columnas que no son relevantes para la búsqueda para mejorar el rendimiento.
